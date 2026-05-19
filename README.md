@@ -26,6 +26,12 @@ eden proje.
 └── KURULUM.md               # ADIM ADIM kurulum + sunum rehberi
 ```
 
+## 🎤 SUNUM
+
+Bilgisayari yeni actiysan, hangi terminalde ne yapacagin adim adim:
+**[SUNUM-REHBERI.md](SUNUM-REHBERI.md)** (en kapsamli, terminal terminal).
+Hizli komut listesi: **[SUNUM-KOMUTLARI.md](SUNUM-KOMUTLARI.md)**.
+
 ## Hizli baslangic
 
 Tum kurulum ve sunum adimlari **[KURULUM.md](KURULUM.md)** dosyasinda.
