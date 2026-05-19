@@ -6,8 +6,10 @@ pipeline {
     // gerekir (KURULUM.md -> ngrok adimina bakin). Webhook kullanamiyorsaniz
     // asagidaki pollSCM satirini aktif edip githubPush'u yorum yapin.
     triggers {
+        // githubPush(): webhook (ngrok ile). pollSCM: webhook'suz da calisir,
+        // her dakika GitHub'i kontrol eder -> push/merge'de otomatik tetikler (PS1).
         githubPush()
-        // pollSCM('* * * * *')
+        pollSCM('* * * * *')
     }
 
     environment {
