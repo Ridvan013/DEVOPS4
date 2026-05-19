@@ -39,9 +39,16 @@ java -jar "C:\Users\RIDVAN\tools\jenkins.war" --httpPort=8081
 ```
 
 Ayni `JENKINS_HOME` kullanildigi icin kurdugun her sey (kullanici, plugin,
-job) korunur. Ilk acilis sifresi (gerekirse):
-**`41037a6f94e34d41a5be278fa8d1227e`**
-(veya `C:\Users\RIDVAN\.jenkins\secrets\initialAdminPassword`).
+job) korunur.
+
+**Jenkins giris bilgileri:** kullanici **`ridvan`** / sifre **`ridvan`**
+
+Setup sihirbazi atlandi (init script ile). Giris yapinca direkt panele
+duser; ilk acilis token'ina / "Install suggested plugins" adimina gerek yok.
+Bu hesap `C:\Users\RIDVAN\.jenkins\init.groovy.d\basic-security.groovy`
+tarafindan her aciliista garanti edilir. (Repodaki kopya:
+[jenkins/basic-security.groovy](jenkins/basic-security.groovy) — baska
+makinede `%JENKINS_HOME%\init.groovy.d\` altina koyman yeterli.)
 
 > Minikube cluster bilgisayar yeniden baslayinca durur; tekrar `minikube start`
 > de. Java 25 ile Jenkins calisiyor (admin panelinde "unsupported Java" uyarisi
@@ -137,10 +144,11 @@ java -jar jenkins.war --httpPort=8081
 > Port 8081 sectik cunku 8080 Spring Boot icin. Jenkins acikken bu pencere
 > kapanmamali.
 
-3. Tarayici: **http://localhost:8081** -> ilk acilista istenen
-   `initialAdminPassword`'u konsol ciktisindan veya
-   `C:\Users\RIDVAN\.jenkins\secrets\initialAdminPassword` dosyasindan al.
-4. "Install suggested plugins" sec, admin kullanici olustur.
+3. Tarayici: **http://localhost:8081** -> giris: **`ridvan` / `ridvan`**.
+   (Setup sihirbazi init script ile atlandigi icin token/plugin sihirbazi
+   cikmaz; dogrudan panele duser.)
+4. Plugin sihirbazi cikmadigi icin gerekli 5 plugin'i **3.2'deki gibi elle**
+   kurman gerekir (asagi).
 
 > Windows Installer (.msi) ile de kurabilirsin ama o zaman Jenkins "SYSTEM"
 > servis kullanicisiyla calisir ve kubectl/minikube/docker'i goremeyebilir.
@@ -149,15 +157,18 @@ java -jar jenkins.war --httpPort=8081
 
 ### 3.2 Gerekli Plugin'ler
 
-**Manage Jenkins -> Plugins -> Available plugins** kisminda sunlari kur:
+Sihirbaz atlandigi icin **hicbir plugin onceden kurulu degil**. **Manage
+Jenkins -> Plugins -> Available plugins** kisminda sunlarin hepsini ara ve kur:
 
-- **Git plugin** (genelde gelir)
+- **Git plugin**
 - **GitHub plugin**
-- **Pipeline** (Pipeline: Groovy — genelde gelir)
+- **Pipeline** (veya "Pipeline: Groovy" / Pipeline: Aggregator)
 - **Docker Pipeline**
 - **Credentials Binding plugin**
 
-Kurduktan sonra Jenkins'i yeniden baslat (sayfa: `.../restart`).
+"Install after restart" / "Restart Jenkins when installation is complete" sec.
+Jenkins kapaninca **kendi terminalinde** tekrar baslat (yukaridaki komut) —
+ayni `JENKINS_HOME` oldugu icin pluginler korunur.
 
 ### 3.3 DockerHub Kimligi Ekle
 
