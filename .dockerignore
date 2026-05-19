@@ -1,6 +1,10 @@
 .idea
 .gradle
-build
 *.iml
 .git
 .gitignore
+# build klasoru haric, ama uretilen jar imaja girmeli
+build/*
+!build/libs
+build/libs/*
+!build/libs/*.jar

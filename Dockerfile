@@ -1,16 +1,10 @@
-FROM eclipse-temurin:25-jdk AS build
-
-WORKDIR /app
-
-COPY . .
-
-RUN chmod +x gradlew && ./gradlew bootJar --no-daemon
-
+# JAR, Jenkins pipeline'inda Stage 2'de host'ta (gradlew) uretilir.
+# Stage 3'te bu Dockerfile sadece hazir jar'i paketler (hizli, ag bagimsiz).
 FROM eclipse-temurin:25-jre
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY build/libs/*.jar app.jar
 
 EXPOSE 8080
 

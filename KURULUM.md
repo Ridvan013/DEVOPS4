@@ -8,6 +8,47 @@ Komutlar **PowerShell** icindir. Her adimi sirayla uygula.
 
 ---
 
+## ✅ ASISTAN TARAFINDAN ZATEN YAPILANLAR (durum)
+
+Bu adimlar senin icin bir kez yapildi, dogrulandi:
+
+| Is | Durum | Detay |
+|----|-------|-------|
+| Minikube kuruldu | ✅ | `C:\Users\RIDVAN\tools\minikube.exe` + kullanici PATH'ine eklendi |
+| Minikube cluster | ✅ Running | `minikube status` -> host/kubelet/apiserver Running |
+| JAR build | ✅ | `gradlew bootJar` -> `build/libs/devops4-0.0.1-SNAPSHOT.jar` |
+| Docker imaji | ✅ | `ridvandursun/devops4:latest` ve `:1` |
+| DockerHub push | ✅ | hub.docker.com/r/ridvandursun/devops4 (public) |
+| K8s deploy | ✅ | `kubectl apply` -> deployment + service uygulandi |
+| Uygulama K8s'te | ✅ | HTTP 200, "Served by pod: devops4-..." |
+| 2 pod'a scale | ✅ | 2 pod Running, yuk iki pod'a dagiliyor (kanitlandi) |
+| Jenkins indirildi | ✅ | `C:\Users\RIDVAN\tools\jenkins.war` |
+| Jenkins calisiyor | ⚠️ | http://localhost:8081 — ama bu surec asistan oturumuna bagli, kapaninca durur (bkz. asagi) |
+
+**Senin yapman gerekenler:** GitHub'a push (Adim 4), Jenkins UI sihirbazi +
+plugin + credential + pipeline job (Adim 5), webhook (Adim 6), sunum (Adim 7).
+
+### ⚠️ ÖNEMLİ — Jenkins'i kendin baslat
+
+Asistanin baslattigi Jenkins, oturum kapaninca durur. Sunumdan once **kendi
+terminalinde** sunu calistir ve pencereyi acik birak:
+
+```powershell
+$env:JENKINS_HOME="C:\Users\RIDVAN\.jenkins"
+java -jar "C:\Users\RIDVAN\tools\jenkins.war" --httpPort=8081
+```
+
+Ayni `JENKINS_HOME` kullanildigi icin kurdugun her sey (kullanici, plugin,
+job) korunur. Ilk acilis sifresi (gerekirse):
+**`41037a6f94e34d41a5be278fa8d1227e`**
+(veya `C:\Users\RIDVAN\.jenkins\secrets\initialAdminPassword`).
+
+> Minikube cluster bilgisayar yeniden baslayinca durur; tekrar `minikube start`
+> de. Java 25 ile Jenkins calisiyor (admin panelinde "unsupported Java" uyarisi
+> cikabilir, gormezden gelinebilir).
+
+---
+
 ## 0. On Gereksinimler
 
 | Arac | Durum | Not |
@@ -16,14 +57,18 @@ Komutlar **PowerShell** icindir. Her adimi sirayla uygula.
 | Docker Desktop | Kurulu + calisiyor olmali | Minikube driver'i da bu olacak |
 | Git | Kurulu | `git --version` |
 | kubectl | Kurulu | `kubectl version --client` |
-| Minikube | **Kurulacak** (Adim 1) | |
-| Jenkins | **Kurulacak** (Adim 3) | |
+| Minikube | ✅ Kuruldu (Adim 1 referans) | `C:\Users\RIDVAN\tools` |
+| Jenkins | ✅ Indirildi (Adim 3 referans) | `C:\Users\RIDVAN\tools\jenkins.war` |
 
 Docker Desktop **acik** ve calisir durumda olmali (sag alt simge yesil).
 
 ---
 
 ## 1. Minikube Kurulumu
+
+> ℹ️ Bu adim **zaten yapildi** (binary `C:\Users\RIDVAN\tools`, PATH'e eklendi,
+> cluster Running). Asagisi yeniden kurulum / baska makine / bilgi icindir.
+> Yeniden baslatmak yeterli: `minikube start`
 
 ### 1.1 Kurulum (Chocolatey ile — en kolay)
 
@@ -70,6 +115,11 @@ gormelisin. `Ctrl+C` ile durdur.
 ---
 
 ## 3. Jenkins Kurulumu
+
+> ℹ️ `jenkins.war` **zaten indirildi** (`C:\Users\RIDVAN\tools\jenkins.war`) ve
+> bir kez calistirildi. Yeniden baslatmak icin yukaridaki "Jenkins'i kendin
+> baslat" kutusuna bak. Asagidaki 3.2–3.4 (plugin, credential) **senin UI'da
+> yapman gereken** adimlar.
 
 ### 3.1 Jenkins'i kur
 

@@ -15,7 +15,7 @@ eden proje.
 ```
 .
 ├── Jenkinsfile              # 6 stage'li CI/CD pipeline
-├── Dockerfile               # Multi-stage (gradle build -> jre)
+├── Dockerfile               # Hazir jar'i jre imajina paketler
 ├── build.gradle             # Sadece spring-boot-starter-webmvc
 ├── k8s/
 │   ├── deployment.yaml      # 1 replica (sunumda 2'ye scale edilir)
