@@ -22,11 +22,18 @@ Bu adimlar senin icin bir kez yapildi, dogrulandi:
 | K8s deploy | ✅ | `kubectl apply` -> deployment + service uygulandi |
 | Uygulama K8s'te | ✅ | HTTP 200, "Served by pod: devops4-..." |
 | 2 pod'a scale | ✅ | 2 pod Running, yuk iki pod'a dagiliyor (kanitlandi) |
-| Jenkins indirildi | ✅ | `C:\Users\RIDVAN\tools\jenkins.war` |
-| Jenkins calisiyor | ⚠️ | http://localhost:8081 — ama bu surec asistan oturumuna bagli, kapaninca durur (bkz. asagi) |
+| 2 pod'a scale | ✅ | 2 pod Running, yuk iki pod'a dagiliyor (kanitlandi) |
+| Jenkins kuruldu | ✅ | `C:\Users\RIDVAN\tools\jenkins.war`, giris `ridvan/ridvan` |
+| Jenkins pluginleri | ✅ | git, github, pipeline, docker-workflow, credentials-binding |
+| DockerHub credential | ✅ | Jenkins id: `dockerhub` (ridvandursun + token) |
+| Kod GitHub'da | ✅ | https://github.com/Ridvan013/DEVOPS4 (main) |
+| `devops4` pipeline job | ✅ | Pipeline from SCM -> Jenkinsfile, pollSCM tetikleyici |
+| **Pipeline 6 stage** | ✅ **SUCCESS** | Build #3 -> imaj `ridvandursun/devops4:3` K8s'e deploy edildi |
+| Jenkins calisiyor | ⚠️ | http://localhost:8081 — surec asistan oturumuna bagli, kapaninca durur (bkz. asagi) |
 
-**Senin yapman gerekenler:** GitHub'a push (Adim 4), Jenkins UI sihirbazi +
-plugin + credential + pipeline job (Adim 5), webhook (Adim 6), sunum (Adim 7).
+**Her sey kurulu ve pipeline calisiyor.** Senin yapman gerekenler sadece:
+sunum oncesi Jenkins'i kendi terminalinde baslatmak (asagi), sunumda push'la
+tetikleyip 6 stage'i + K8s'i gostermek, ve 2 pod'a scale demosu (Adim 7).
 
 ### ⚠️ ÖNEMLİ — Jenkins'i kendin baslat
 
