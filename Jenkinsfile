@@ -35,7 +35,7 @@ pipeline {
         stage('2) Build JAR') {
             steps {
                 echo 'Gradle ile jar olusturuluyor...'
-                bat 'gradlew.bat clean bootJar --no-daemon'
+                bat 'call .\\gradlew.bat clean bootJar --no-daemon'
                 bat 'dir build\\libs'
             }
         }
@@ -68,7 +68,7 @@ pipeline {
                 bat 'kubectl apply -f k8s/deployment.yaml'
                 bat 'kubectl apply -f k8s/service.yaml'
                 // Her build te yeni imaji cekmesi icin imaj etiketini guncelle
-                bat "kubectl set image deployment/devops4-deployment devops4=%IMAGE%:%BUILD_NUMBER% --record"
+                bat "kubectl set image deployment/devops4-deployment devops4=%IMAGE%:%BUILD_NUMBER%"
                 bat 'kubectl rollout status deployment/devops4-deployment --timeout=180s'
                 bat 'kubectl get pods -o wide'
                 bat 'kubectl get svc devops4-service'
