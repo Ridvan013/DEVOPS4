@@ -1,180 +1,109 @@
-# SUNUM — Komutlar
+# Sunum Komutları
 
-Tek bir PowerShell aç. Aşağıdaki blokları sırayla, olduğu gibi yapıştır.
-
----
-
-## Hızlı: tüm komutlar tek blokta
+## Sunum öncesi hazırlık
 
 ```powershell
-# 1) Docker Desktop
-Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-while ($true) { docker ps *> $null; if ($?) { break }; Start-Sleep 5 }
+# 1. Docker Desktop'ı aç (manuel)
 
-# 2) Jenkins (kendi penceresinde)
+# 2. Jenkins'i başlat
 $jcmd = '$env:JENKINS_HOME="C:\Users\RIDVAN\.jenkins"; & "C:\Users\RIDVAN\.jdks\openjdk-25.0.2\bin\java.exe" -jar "C:\Users\RIDVAN\tools\jenkins.war" --httpPort=8081'
 Start-Process powershell -ArgumentList '-NoExit','-Command',$jcmd
+# → http://localhost:8081   (giris: ridvan / ridvan)
 
-# 3) Jenkins'i tarayicida ac
-while ($true) { try { Invoke-WebRequest http://localhost:8081/login -UseBasicParsing -TimeoutSec 5 | Out-Null; break } catch { Start-Sleep 5 } }
-Start-Process "http://localhost:8081"
-
-# 4) Minikube
+# 3. Minikube'u başlat
 & "C:\Users\RIDVAN\tools\minikube.exe" start --driver=docker
-& "C:\Users\RIDVAN\tools\minikube.exe" status
-kubectl get nodes -o wide
-
-# 5) Pipeline'i push ile tetikle
-cd C:\Users\RIDVAN\Desktop\DEVOPS4
-git commit --allow-empty -m "sunum: pipeline tetikle"
-git push origin main
-
-# 6) Build sayfasini ac
-Start-Process "http://localhost:8081/job/devops4/"
-
-# 7) K8s dogrula
-kubectl get all
-kubectl get pods -o wide
-kubectl get svc devops4-service
-
-# 8) Servis tunelini ac (kendi penceresinde, tarayici otomatik acilir)
-Start-Process powershell -ArgumentList '-NoExit','-Command','& "C:\Users\RIDVAN\tools\minikube.exe" service devops4-service'
-
-# 9) 2 pod'a scale
-kubectl scale deployment devops4-deployment --replicas=2
-kubectl rollout status deployment/devops4-deployment
-kubectl get pods -o wide
-
-# 10) Load-balance kaniti
-kubectl run lbtest --image=curlimages/curl:8.11.0 --restart=Never --command -- sh -c "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do curl -s http://devops4-service/; echo; done"
-kubectl wait --for=jsonpath='{.status.phase}'=Succeeded pod/lbtest --timeout=120s
-kubectl logs lbtest
-kubectl delete pod lbtest
 ```
 
----
-
-## Adım adım
-
-### 1) Docker Desktop
+## Podları ve servisleri göster
 
 ```powershell
-Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-while ($true) { docker ps *> $null; if ($?) { break }; Start-Sleep 5 }
+kubectl get pods
+kubectl get services
 ```
 
-### 2) Jenkins
-
-```powershell
-$jcmd = '$env:JENKINS_HOME="C:\Users\RIDVAN\.jenkins"; & "C:\Users\RIDVAN\.jdks\openjdk-25.0.2\bin\java.exe" -jar "C:\Users\RIDVAN\tools\jenkins.war" --httpPort=8081'
-Start-Process powershell -ArgumentList '-NoExit','-Command',$jcmd
-```
-
-### 3) Jenkins tarayıcı
-
-```powershell
-while ($true) { try { Invoke-WebRequest http://localhost:8081/login -UseBasicParsing -TimeoutSec 5 | Out-Null; break } catch { Start-Sleep 5 } }
-Start-Process "http://localhost:8081"
-```
-
-### 4) Minikube
-
-```powershell
-& "C:\Users\RIDVAN\tools\minikube.exe" start --driver=docker
-& "C:\Users\RIDVAN\tools\minikube.exe" status
-kubectl get nodes -o wide
-```
-
-### 5) Pipeline tetikle
-
-```powershell
-cd C:\Users\RIDVAN\Desktop\DEVOPS4
-git commit --allow-empty -m "sunum: pipeline tetikle"
-git push origin main
-```
-
-### 6) Build sayfası
-
-```powershell
-Start-Process "http://localhost:8081/job/devops4/"
-```
-
-### 7) K8s
-
-```powershell
-kubectl get all
-kubectl get pods -o wide
-kubectl get svc devops4-service
-```
-
-### 8) Servis tüneli
+## Uygulamayı aç
 
 ```powershell
 Start-Process powershell -ArgumentList '-NoExit','-Command','& "C:\Users\RIDVAN\tools\minikube.exe" service devops4-service'
+# Tarayıcıda / sayfası açılır
 ```
 
-### 9) Scale
+## GitHub push → Jenkins otomatik tetiklenme gösterimi
+
+Önce `HelloController.java` dosyasını şöyle güncelle — mesaja `(v2)` ekle:
+
+```java
+return "Hello from SWE304 DEVOPS4 (v2)! Spring Boot running on Kubernetes. Served by pod: " + pod;
+```
+
+Sonra push et:
+
+```powershell
+cd C:\Users\RIDVAN\Desktop\DEVOPS4
+git add src/main/java/com/example/demo/controller/HelloController.java
+git commit -m "Add v2 marker to hello message"
+git push origin main
+```
+
+Jenkins ~1 dakika içinde otomatik build başlatır. Build bittikten sonra
+tarayıcıyı yenile — `(v2)` görünür.
+
+## 2 pod'a scale et
 
 ```powershell
 kubectl scale deployment devops4-deployment --replicas=2
-kubectl rollout status deployment/devops4-deployment
-kubectl get pods -o wide
+kubectl get pods
+# 2x Running görünmeli
 ```
 
-### 10) Kanıt
-
 ```powershell
-kubectl run lbtest --image=curlimages/curl:8.11.0 --restart=Never --command -- sh -c "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do curl -s http://devops4-service/; echo; done"
-kubectl wait --for=jsonpath='{.status.phase}'=Succeeded pod/lbtest --timeout=120s
-kubectl logs lbtest
-kubectl delete pod lbtest
+Start-Process powershell -ArgumentList '-NoExit','-Command','& "C:\Users\RIDVAN\tools\minikube.exe" service devops4-service'
+# / hâlâ çalışıyor
 ```
 
 ---
 
-## Sorun olursa
+Sunum öncesi başlatma:
 
 ```powershell
-# Jenkins yeniden baslat
+# Jenkins'i başlat
 $jcmd = '$env:JENKINS_HOME="C:\Users\RIDVAN\.jenkins"; & "C:\Users\RIDVAN\.jdks\openjdk-25.0.2\bin\java.exe" -jar "C:\Users\RIDVAN\tools\jenkins.war" --httpPort=8081'
 Start-Process powershell -ArgumentList '-NoExit','-Command',$jcmd
-```
 
-```powershell
-# Build'i elle tetikle (sayfada Build Now)
-Start-Process "http://localhost:8081/job/devops4/"
-```
-
-```powershell
-# Minikube sifirla
-& "C:\Users\RIDVAN\tools\minikube.exe" delete
+# Minikube'u başlat
 & "C:\Users\RIDVAN\tools\minikube.exe" start --driver=docker
 ```
 
-```powershell
-# Pod loglari
-kubectl logs deployment/devops4-deployment
-```
+Sunum sırasında gösterilecek komutlar:
 
 ```powershell
-# Servis URL
-& "C:\Users\RIDVAN\tools\minikube.exe" service devops4-service --url
+# Pod durumunu göster
+kubectl get pods
+
+# Servis ve deployment'ı göster
+kubectl get deployments
+kubectl get services
+
+# 2 pod'a ölçekle (canlı göster)
+kubectl scale deployment devops4-deployment --replicas=2
+kubectl get pods
+
+# Uygulamayı aç (tünel açar, URL verir)
+Start-Process powershell -ArgumentList '-NoExit','-Command','& "C:\Users\RIDVAN\tools\minikube.exe" service devops4-service'
 ```
 
----
+Push demo için HelloController'a küçük ekleme (canlı push tetiklemek için):
 
-## Kapanış
+`src/main/java/com/example/demo/controller/HelloController.java` dosyasında mesaja `(v2)` ekle:
+
+```java
+return "Hello from SWE304 DEVOPS4 (v2)! Spring Boot running on Kubernetes. Served by pod: " + pod;
+```
+
+Sonra commit + push → Jenkins otomatik tetiklenir → pipeline çalışır.
+
+Test komutu (minikube service'in verdiği URL'ye göre):
 
 ```powershell
-kubectl scale deployment devops4-deployment --replicas=1
-& "C:\Users\RIDVAN\tools\minikube.exe" stop
+curl http://127.0.0.1:<PORT>/
 ```
-
----
-
-## Notlar
-
-- Jenkins giriş: `ridvan` / `ridvan`
-- 6 stage: 1 Clone · 2 Build JAR · 3 Docker image · 4 DockerHub login · 5 Push · 6 K8s deploy
-- Build tetikleyici: "Started by an SCM change" (PS1)
-- Jenkins penceresi ve servis tüneli penceresi demo bitene kadar açık kalır
